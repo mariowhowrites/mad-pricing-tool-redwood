@@ -1,0 +1,41 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = "native"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+model PriceSnapshot {
+  id Int @id @default(autoincrement())
+  url String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  priceMeasurements PriceMeasurement[]
+}
+
+model PriceMeasurement {
+  id Int @id @default(autoincrement())
+
+  width Float
+  height Float
+  quantity Int
+  variant String
+
+  price BigInt
+
+  squareInches Float
+  pricePerSquareInch Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt @default(now())
+
+  priceSnapshotId Int
+  priceSnapshot PriceSnapshot @relation(fields: [priceSnapshotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
